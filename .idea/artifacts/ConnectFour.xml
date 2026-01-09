@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="war" build-on-make="true" name="ConnectFour">
+    <output-path>$PROJECT_DIR$/out/artifacts/ConnectFour</output-path>
+    <root id="archive" name="ConnectFour.war">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="ConnectFour" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="ConnectFour/web/Web" />
+    </root>
+  </artifact>
+</component>
