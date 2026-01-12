@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - package
+  - deploy
 
 image: amazoncorretto:21
 
@@ -43,3 +44,33 @@ package:
       - "ConnectFour.war"
   script:
     - ./scripts/package.sh
+
+deploy_test:
+  stage: deploy
+  tags:
+    - shell
+  dependencies:
+    - package
+  environment:
+    name: test
+    action: start
+    url: http://localhost:8080/ConnectFour
+    on_stop: stop_test
+  when: manual
+  script:
+    - docker rm --force tomcat # remove existing tomcat container
+    - docker image rm --force connect-four # remove container image
+    - docker build -t connect-four . # build container image (use "--no-cache" if necessary)
+    - docker run --rm -d --name tomcat -p 8080:8080 connect-four # start new container
+
+stop_test:
+  stage: deploy
+  tags:
+    - shell
+  environment:
+    name: test
+    action: stop
+  when: manual
+  script:
+    - docker rm --force tomcat
+    - docker image rm --force connect-four
