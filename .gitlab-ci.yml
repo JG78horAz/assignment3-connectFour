@@ -8,7 +8,7 @@ build: # Job 1
   tags:
     - docker
   artifacts:
-          #      build-main-4claf3b
+          #     build-main-4claf3b
     name: $CI_JOB_NAME-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
     expire_in: 1 week
     paths:
