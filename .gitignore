@@ -1,2 +1,9 @@
 out/*
 !out/.gitkeep
+
+bin/
+ConnectFour.war
+jacoco.exec
+jacoco.xml
+.idea/
+*.iml
