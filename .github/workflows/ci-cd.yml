@@ -1,0 +1,52 @@
+name: CI/CD
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: bash scripts/build.sh
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: bash scripts/test.sh
+      - name: Upload jacoco report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco
+          path: jacoco.xml
+
+  package:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package
+        run: bash scripts/package.sh
+      - name: Upload war
+        uses: actions/upload-artifact@v4
+        with:
+          name: war
+          path: ConnectFour.war
+
+  deploy:
+    runs-on: self-hosted
+    needs: package
+    steps:
+      - name: Download war
+        uses: actions/download-artifact@v4
+        with:
+          name: war
+      - name: Deploy to Tomcat (self-hosted)
+        run: |
+          rm -rf /usr/local/tomcat/webapps/ConnectFour /usr/local/tomcat/webapps/ConnectFour.war || true
+          cp ConnectFour.war /usr/local/tomcat/webapps/ConnectFour.war
