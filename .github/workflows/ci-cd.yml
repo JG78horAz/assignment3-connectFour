@@ -9,16 +9,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Prepare scripts
+        run: |
+          sed -i 's/\r$//' scripts/*.sh
+          chmod +x scripts/*.sh
+
       - name: Build
         run: bash scripts/build.sh
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin
+          path: bin
 
   test:
     runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v4
+
+      - name: Prepare scripts
+        run: |
+          sed -i 's/\r$//' scripts/*.sh
+          chmod +x scripts/*.sh
+
+      - name: Download bin
+        uses: actions/download-artifact@v4
+        with:
+          name: bin
+          path: bin
+
       - name: Test
         run: bash scripts/test.sh
+
       - name: Upload jacoco report
         uses: actions/upload-artifact@v4
         with:
@@ -30,8 +55,15 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
+
+      - name: Prepare scripts
+        run: |
+          sed -i 's/\r$//' scripts/*.sh
+          chmod +x scripts/*.sh
+
       - name: Package
         run: bash scripts/package.sh
+
       - name: Upload war
         uses: actions/upload-artifact@v4
         with:
@@ -46,6 +78,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: war
+
       - name: Deploy to Tomcat (self-hosted)
         run: |
           rm -rf /usr/local/tomcat/webapps/ConnectFour /usr/local/tomcat/webapps/ConnectFour.war || true
